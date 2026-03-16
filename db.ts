@@ -197,7 +197,18 @@ export const db = {
         return getFallbackData(category);
       }
       
-      return data;
+      return data.map((item: any) => {
+        const mapped: any = { ...item };
+        if ('detailedroute' in mapped) {
+          mapped.detailedRoute = mapped.detailedroute;
+          delete mapped.detailedroute;
+        }
+        if ('offday' in mapped) {
+          mapped.offDay = mapped.offday;
+          delete mapped.offday;
+        }
+        return mapped;
+      });
     } catch (error) {
       console.error(`Error fetching ${category} from Supabase:`, error);
       return getFallbackData(category);
