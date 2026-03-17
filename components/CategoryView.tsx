@@ -82,7 +82,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
       setDataSource('local');
       
       if (['market_price', 'notices', 'jobs'].includes(category)) {
-        if ((category === 'jobs' || category === 'market_price' || category === 'notices') && !forceRefresh) {
+        if (!forceRefresh) {
           const cacheKey = `rajbari_${category}_cache_v6`;
           const timeKey = `rajbari_${category}_timestamp_v6`;
           const cachedData = localStorage.getItem(cacheKey);
@@ -92,14 +92,13 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
           if (cachedData && cacheTime === today) {
             setData(JSON.parse(cachedData));
             setDataSource('cache');
-            setLoading(false);
             return;
           }
         }
         await fetchAiCategoryData(category, localItems);
       }
-    } catch (e: any) {
-      console.error(e);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -108,7 +107,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
   const fetchAiCategoryData = async (cat: string, fallbackData: any[]) => {
     setIsAiLoading(true);
     const timeContext = getLiveTimeContext();
-    let prompt = "";
+    let prompt = '';
 
     if (cat === 'market_price') {
       prompt = `${timeContext}। গুগল সার্চ ব্যবহার করে বাংলাদেশের (বিশেষ করে রাজবাড়ী বা ঢাকার) আজকের সর্বশেষ খুচরা বাজারদর (Latest Retail Market Price) এবং সরকারি নির্ধারিত দাম খুঁজুন।
@@ -123,7 +122,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
       আর যদি সত্যি নতুন নোটিশ পান, তবে ফরম্যাট হবে: [{"title": "নোটিশের শিরোনাম", "date": "তারিখ", "summary": "সারাংশ", "priority": "high"}]
       শুধুমাত্র JSON Array রিটার্ন করবেন, অন্য কোনো কথা নয়।`;
     } else if (cat === 'jobs') {
-      prompt = `${timeContext}। গুগল সার্চ করে রাজবাড়ী জেলার জন্য শুধুমাত্র *বর্তমান সময়ের* নতুন "সরকারি চাকরির বিজ্ঞপ্তি" (Government Jobs) খুঁজুন।
+      prompt = `${timeContext}। গুগল সার্চ করে রাজবাড়ী জেলার জন্য শুধুমাত্র *বর্তমান সময়ের* নতুন "সরকারি চাকরির বিজ্ঞপ্তি" (Government Jobs) খুঁজুন।
       শর্তসমূহ:
       ১. রাজবাড়ী জেলা প্রশাসন (DC Office), কালেক্টরেট স্কুল (Collectorate School), পুলিশ সুপার কার্যালয়, জেলা পরিষদ, বা অন্যান্য ভেরিফায়েড সরকারি সোর্স থেকে ডাটা নিবেন।
       ২. কোনো পুরনো বছরের (যেমন ২০২৫ বা তার আগের) বিজ্ঞপ্তি দেখাবেন না।
@@ -165,16 +164,6 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
 
   useEffect(() => { fetchData(); }, [category]);
 
-  const [timeTick, setTimeTick] = useState(0);
-
-useEffect(() => {
-  const interval = setInterval(() => {
-    setTimeTick(prev => prev + 1);
-  }, 60000);
-
-  return () => clearInterval(interval);
-}, []);
-
   const normalize = (text: string) => text.toLowerCase().replace(/[ড়র]/g, 'র').replace(/\s+/g, '').trim();
 
   const findStationInText = (text: string, route: string) => {
@@ -190,89 +179,90 @@ useEffect(() => {
     return null;
   };
 
- const runTrainAIInference = async (train: Train) => {
-  if (isInferring) return;
-  setIsInferring(true);
-  setCurrentStation(null);
-  setAiInference({ delayMinutes: 0, confidence: 0, reason: 'অনলাইনে তথ্য খোঁজা হচ্ছে...', isAI: true, sources: [] });
-  
-  try {
-    const now = new Date().toLocaleTimeString('bn-BD');
-
-    const prompt = `এখন সময় ${now}। রাজবাড়ী জেলার "${train.name}" (ট্রেন নং ${train.id}) বর্তমানে কোথায় আছে? ফেসবুক গ্রুপ 'Rajbari Rail Club' বা 'Rajbari Helpline' এবং অনলাইন সোর্স থেকে সর্বশেষ ২ ঘণ্টার আপডেট চেক করুন। আপনার উত্তরের শেষে অবশ্যই "[STATION: স্টেশনের নাম]" ট্যাগটি যোগ করবেন। যদি সঠিক স্টেশন না পান তবে "অজানা" লিখুন।`;
-
-    const response = await db.callAI({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      systemInstruction: "আপনি রাজবাড়ী রেলওয়ে ট্র্যাকিং সহকারী। গুগল সার্চ ব্যবহার করে দ্রুত ও সঠিক তথ্য দিন।",
-      model: 'gemini-3-flash-preview',
-      tools: [{ googleSearch: {} }]
-    });
-
-    const text = response.text || "দুঃখিত, কোনো সাম্প্রতিক তথ্য পাওয়া যায়নি।";
-    const stationMatch = text.match(/\[STATION:\s*(.*?)\]/i);
+  const runTrainTracking = async (train: Train) => {
+    if (isInferring) return;
+    setIsInferring(true);
+    setCurrentStation(null);
+    setSources([]);
+    const timeContext = getLiveTimeContext();
+    setAiInference({ reason: 'ফেসবুক গ্রুপ এবং ইন্টারনেট থেকে লাইভ ডাটা স্ক্যান করা হচ্ছে...', delay: 'হিসাব হচ্ছে...' });
     
-    if (stationMatch && stationMatch[1] && !stationMatch[1].includes("অজানা")) {
-      const found = stationMatch[1].trim();
-      const routeStations = train.detailedRoute.split(',').map(s => s.trim());
-      const bestMatch = routeStations.find(s => found.includes(s) || s.includes(found));
-      setCurrentStation(bestMatch || found);
+    try {
+      const prompt = `${timeContext}। 
+      গুগল সার্চে "site:facebook.com/groups ${train.name}" অথবা "${train.name} train live location today Bangladesh" লিখে খুঁজুন।
+      
+      নির্দেশিকা:
+      ১. ফেসবুকের যেকোনো পাবলিক গ্রুপ বা পেজ থেকে আজকের লেটেস্ট আপডেটটি খুঁজে বের করার সর্বোচ্চ চেষ্টা করুন।
+      ২. উত্তরের শুরুতে ট্রেনের নাম ("${train.name}") এবং কোথা থেকে তথ্য পেয়েছেন (সোর্সের নাম ও সময়) তা উল্লেখ করুন।
+      ৩. যদি ইন্টারনেটে বা ফেসবুকে আজকের কোনো লাইভ আপডেট না পান, তবে ট্রেনের ছাড়ার সময় (${train.departure}) অনুযায়ী এখন ট্রেনটি কোথায় থাকতে পারে তার একটি যৌক্তিক অনুমান দিন এবং বলে দিন যে এটি আনুমানিক অবস্থান।
+      ৪. উত্তরের একদম শেষে অবশ্যই [STATION: স্টেশনের_নাম] এই ফরম্যাটে ট্রেনটি বর্তমানে যে স্টেশনে আছে তার নাম লিখবেন। 
+      স্টেশনের নাম অবশ্যই এই লিস্টের যেকোনো একটি হতে হবে: ${train.detailedRoute}।`;
+      
+      const response = await db.callAI({ contents: prompt, useSearch: true, model: 'gemini-3.1-pro-preview' });
+      
+      if (response.mode === 'local_engine' || !response.text) throw new Error("FAIL");
+      
+      // Remove the [STATION: ...] tag from the reason text shown to the user
+      const cleanReason = response.text.replace(/\[STATION:.*?\]/gi, '').trim();
+      setAiInference({ reason: cleanReason, delay: 'লাইভ ডাটা অনুযায়ী' });
+      setSources(response.sources || []);
+      
+      let found = null;
+      // First try to extract the exact station from the special tag
+      const stationMatch = response.text.match(/\[STATION:\s*(.+?)\]/i);
+      if (stationMatch && stationMatch[1]) {
+        found = findStationInText(stationMatch[1], train.detailedRoute);
+      }
+      // Fallback to searching the whole text
+      if (!found) {
+        found = findStationInText(response.text, train.detailedRoute);
+      }
+      
+      if (found) setCurrentStation(found);
+    } catch (error) {
+      // Improved Fallback Estimation
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMin = now.getMinutes();
+      const totalMinutes = currentHour * 60 + currentMin;
+
+      // Extract departure time (e.g., "06:10 AM")
+      const depTimeStr = train.departure;
+      const isPM = depTimeStr.includes('PM');
+      const timeParts = depTimeStr.replace(' AM', '').replace(' PM', '').split(':');
+      let depHour = parseInt(timeParts[0]);
+      if (isPM && depHour < 12) depHour += 12;
+      if (!isPM && depHour === 12) depHour = 0; // Handle 12:xx AM
+      const depMinutes = depHour * 60 + parseInt(timeParts[1]);
+
+      const stations = train.detailedRoute.split(',').map(s => s.trim());
+      let travelDiff = totalMinutes - depMinutes;
+      
+      // Handle overnight trains
+      if (travelDiff < -720) {
+        travelDiff += 1440; // Add 24 hours if it departed late yesterday
+      }
+
+      let estimatedIdx = 0;
+      if (travelDiff < 0) {
+        estimatedIdx = 0; // Not yet departed
+      } else {
+        // Assume roughly 20-30 mins between major station chunks depending on train type
+        const speedFactor = train.type === 'intercity' ? 20 : 30;
+        estimatedIdx = Math.min(Math.floor(travelDiff / speedFactor), stations.length - 1);
+      }
+
+      const loc = stations[estimatedIdx];
+
+      setAiInference({ 
+        reason: `অফলাইন মোড নোট: লাইভ সার্ভারে কানেক্ট করা যায়নি।\nনির্ধারিত সময়সূচী অনুযায়ী ট্রেনটি এখন সম্ভবত ${loc} স্টেশনের আশেপাশে অবস্থান করছে। এটি একটি স্মার্ট ক্যালকুলেশন, নিশ্চিত তথ্য নয়।`, 
+        delay: 'শিডিউল অনুযায়ী' 
+      });
+      setCurrentStation(loc);
+    } finally {
+      setIsInferring(false);
     }
-
-    setAiInference({ 
-      delayMinutes: 0, 
-      confidence: 0.95, 
-      reason: text.replace(/\[STATION:.*?\]/i, '').trim(), 
-      isAI: true, 
-      sources: response.groundingMetadata?.groundingChunks || [] 
-    });
-
-  } catch (e:any) {
-
-    setAiInference({ 
-      delayMinutes: 0, 
-      confidence: 0, 
-      reason: "দুঃখিত! কানেকশন এরর: " + (e.message || "Unknown error"), 
-      isAI: false, 
-      sources: [] 
-    });
-
-  } finally {
-
-    setIsInferring(false);
-
-  }
-};
-  const getPrayerTimes = (data: any[]) => {
-  const parseTime = (timeStr: string) => {
-    const [time, modifier] = timeStr.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-
-    if (modifier === 'PM' && hours !== 12) hours += 12;
-    if (modifier === 'AM' && hours === 12) hours = 0;
-
-    return hours * 60 + minutes;
   };
-
-  const now = new Date();
-  const current = now.getHours() * 60 + now.getMinutes();
-
-  let currentPrayer = null;
-  let nextPrayer = null;
-
-  for (let i = 0; i < data.length; i++) {
-    const t = parseTime(data[i].time);
-
-    if (t <= current) {
-      currentPrayer = data[i];
-    } else if (!nextPrayer) {
-      nextPrayer = data[i];
-    }
-  }
-
-  if (!nextPrayer) nextPrayer = data[0];
-
-  return { currentPrayer, nextPrayer, currentTime: current };
-};
 
   const renderItem = (item: any, index: number) => {
     if (category === 'trains') return (
@@ -437,7 +427,23 @@ useEffect(() => {
       </div>
     );
 
-   
+    if (category === 'prayers') return (
+      <div key={item.id || index} className="bg-white dark:bg-slate-900 p-5 rounded-[2.2rem] mb-3 flex items-center justify-between border border-emerald-50 dark:border-emerald-900/20 shadow-sm relative overflow-hidden group">
+        <div className="absolute -left-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-2xl text-emerald-600 border border-emerald-100/50 dark:border-emerald-900/50">
+            <MoonStar className="w-6 h-6" />
+          </div>
+          <div>
+            <h4 className="font-bold text-slate-800 dark:text-white text-base">{item.name}</h4>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{item.type}</p>
+          </div>
+        </div>
+        <div className="relative z-10 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-2 rounded-xl border border-emerald-100/50 dark:border-emerald-800/50">
+          <span className="font-black text-emerald-600 dark:text-emerald-400 text-lg tracking-wider">{item.time}</span>
+        </div>
+      </div>
+    );
 
     if (category === 'holidays') return (
       <div key={item.id || index} className="bg-white dark:bg-slate-900 p-5 rounded-[2.2rem] mb-3 flex items-center justify-between border border-orange-50 dark:border-orange-900/20 shadow-sm relative overflow-hidden group">
@@ -529,73 +535,22 @@ useEffect(() => {
         </div>
       ) : (
         <div className="animate-slide-up space-y-1">
-  {data.length > 0 ? (
-    category === 'prayers' ? (
-      (() => {
-        const { currentPrayer, nextPrayer, currentTime } = getPrayerTimes(data);
-
-        const parseTime = (timeStr: string) => {
-          const [time, modifier] = timeStr.split(' ');
-          let [h, m] = time.split(':').map(Number);
-          if (modifier === 'PM' && h !== 12) h += 12;
-          if (modifier === 'AM' && h === 12) h = 0;
-          return h * 60 + m;
-        };
-
-        const nextTime = parseTime(nextPrayer?.time || '00:00 AM');
-        const diff = nextTime - currentTime;
-        const minutesLeft = diff > 0 ? diff : diff + 1440;
-
-        return (
-          <div className="space-y-4">
-
-            {/* TOP CARD */}
-            <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl">
-              <p className="text-xs opacity-80 font-bold">পরবর্তী নামাজ</p>
-              <h3 className="text-xl font-black">{nextPrayer?.name}</h3>
-              <p className="text-3xl font-black mt-1">{nextPrayer?.time}</p>
-              <div className="mt-3 text-sm font-bold">
-                ⏳ {minutesLeft} মিনিট বাকি
+          {isAiLoading && (
+            <div className="bg-indigo-50 dark:bg-indigo-950/40 p-5 rounded-[2rem] border border-indigo-100/50 dark:border-indigo-900/50 mb-6 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2">
+                  <Sparkles className="w-3 h-3 animate-bounce" /> Smart Scan in Progress
+                </span>
+                <Loader2 className="w-3 h-3 animate-spin text-indigo-600" />
+              </div>
+              <div className="w-full h-1 bg-indigo-200 dark:bg-indigo-900 rounded-full overflow-hidden">
+                <div className="w-full h-full bg-indigo-600 animate-[shimmer_1.5s_infinite]"></div>
               </div>
             </div>
-
-            {/* LIST */}
-            {data.map((item: any, i: number) => (
-              <div
-                key={i}
-                className={`p-5 rounded-[2.5rem] ${
-                  item.name === currentPrayer?.name
-                    ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-2xl'
-                    : 'bg-white dark:bg-slate-900'
-                }`}
-              >
-                <div className="flex justify-between">
-                  <div>
-                    <h4 className="font-black">{item.name}</h4>
-                    <p className="text-xs">{item.type}</p>
-                  </div>
-                  <div className="font-black">{item.time}</div>
-                </div>
-
-                {item.name === currentPrayer?.name && (
-                  <div className="text-xs mt-2 animate-pulse">
-                    🟢 এখনকার নামাজ
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        );
-      })()
-    ) : (
-      data.map((item, i) => renderItem(item, i))
-    )
-  ) : (
-    <div className="text-center py-20 text-slate-400 font-bold">
-      কোনো তথ্য পাওয়া যায়নি
-    </div>
-  )}
-</div>
+          )}
+          {data.length > 0 ? data.map((item, i) => renderItem(item, i)) : <div className="text-center py-20 text-slate-400 font-bold">কোনো তথ্য পাওয়া যায়নি</div>}
+        </div>
+      )}
 
       {selectedTrain && (
         <div className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-xl flex items-end md:items-center justify-center p-4">
