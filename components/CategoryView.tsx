@@ -165,6 +165,16 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
 
   useEffect(() => { fetchData(); }, [category]);
 
+  const [timeTick, setTimeTick] = useState(0);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setTimeTick(prev => prev + 1);
+  }, 60000);
+
+  return () => clearInterval(interval);
+}, []);
+
   const normalize = (text: string) => text.toLowerCase().replace(/[ড়র]/g, 'র').replace(/\s+/g, '').trim();
 
   const findStationInText = (text: string, route: string) => {
@@ -231,6 +241,37 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
     setIsInferring(false);
 
   }
+};
+  const getPrayerTimes = (data: any[]) => {
+  const parseTime = (timeStr: string) => {
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+
+    if (modifier === 'PM' && hours !== 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+
+    return hours * 60 + minutes;
+  };
+
+  const now = new Date();
+  const current = now.getHours() * 60 + now.getMinutes();
+
+  let currentPrayer = null;
+  let nextPrayer = null;
+
+  for (let i = 0; i < data.length; i++) {
+    const t = parseTime(data[i].time);
+
+    if (t <= current) {
+      currentPrayer = data[i];
+    } else if (!nextPrayer) {
+      nextPrayer = data[i];
+    }
+  }
+
+  if (!nextPrayer) nextPrayer = data[0];
+
+  return { currentPrayer, nextPrayer, currentTime: current };
 };
 
   const renderItem = (item: any, index: number) => {
@@ -396,23 +437,62 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
       </div>
     );
 
-    if (category === 'prayers') return (
-      <div key={item.id || index} className="bg-white dark:bg-slate-900 p-5 rounded-[2.2rem] mb-3 flex items-center justify-between border border-emerald-50 dark:border-emerald-900/20 shadow-sm relative overflow-hidden group">
-        <div className="absolute -left-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
-        <div className="flex items-center gap-4 relative z-10">
-          <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-2xl text-emerald-600 border border-emerald-100/50 dark:border-emerald-900/50">
-            <MoonStar className="w-6 h-6" />
+   if (category === 'prayers') {
+  const { currentPrayer, nextPrayer, currentTime } = getPrayerTimes(data);
+
+  const parseTime = (timeStr: string) => {
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    if (modifier === 'PM' && hours !== 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+    return hours * 60 + minutes;
+  };
+
+  const nextTime = parseTime(nextPrayer?.time || '00:00 AM');
+  const diff = nextTime - currentTime;
+  const minutesLeft = diff > 0 ? diff : diff + 1440;
+
+  return (
+    <div key={item.id || index} className="space-y-3">
+
+      {item.id === data[0]?.id && (
+        <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl mb-4">
+          <p className="text-xs opacity-80 font-bold">পরবর্তী নামাজ</p>
+          <h3 className="text-xl font-black">{nextPrayer?.name}</h3>
+          <p className="text-3xl font-black mt-1">{nextPrayer?.time}</p>
+          <div className="mt-3 text-sm font-bold">
+            ⏳ {minutesLeft} মিনিট বাকি
           </div>
+        </div>
+      )}
+
+      <div
+        className={`p-5 rounded-[2.5rem] transition-all duration-300 border ${
+          item.name === currentPrayer?.name
+            ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-2xl'
+            : 'bg-white dark:bg-slate-900 border-emerald-50 dark:border-emerald-900/20'
+        }`}
+      >
+        <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-bold text-slate-800 dark:text-white text-base">{item.name}</h4>
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{item.type}</p>
+            <h4 className="text-lg font-black">{item.name}</h4>
+            <p className="text-xs font-bold opacity-70">{item.type}</p>
+          </div>
+
+          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur font-black text-lg">
+            {item.time}
           </div>
         </div>
-        <div className="relative z-10 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-2 rounded-xl border border-emerald-100/50 dark:border-emerald-800/50">
-          <span className="font-black text-emerald-600 dark:text-emerald-400 text-lg tracking-wider">{item.time}</span>
-        </div>
+
+        {item.name === currentPrayer?.name && (
+          <div className="mt-3 text-xs font-bold animate-pulse">
+            🟢 এখনকার নামাজ
+          </div>
+        )}
       </div>
-    );
+    </div>
+  );
+}
 
     if (category === 'holidays') return (
       <div key={item.id || index} className="bg-white dark:bg-slate-900 p-5 rounded-[2.2rem] mb-3 flex items-center justify-between border border-orange-50 dark:border-orange-900/20 shadow-sm relative overflow-hidden group">
