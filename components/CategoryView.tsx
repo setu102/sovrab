@@ -437,62 +437,7 @@ useEffect(() => {
       </div>
     );
 
-   if (category === 'prayers') {
-  const { currentPrayer, nextPrayer, currentTime } = getPrayerTimes(data);
-
-  const parseTime = (timeStr: string) => {
-    const [time, modifier] = timeStr.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-    if (modifier === 'PM' && hours !== 12) hours += 12;
-    if (modifier === 'AM' && hours === 12) hours = 0;
-    return hours * 60 + minutes;
-  };
-
-  const nextTime = parseTime(nextPrayer?.time || '00:00 AM');
-  const diff = nextTime - currentTime;
-  const minutesLeft = diff > 0 ? diff : diff + 1440;
-
-  return (
-    <div key={item.id || index} className="space-y-3">
-
-      {item.id === data[0]?.id && (
-        <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl mb-4">
-          <p className="text-xs opacity-80 font-bold">পরবর্তী নামাজ</p>
-          <h3 className="text-xl font-black">{nextPrayer?.name}</h3>
-          <p className="text-3xl font-black mt-1">{nextPrayer?.time}</p>
-          <div className="mt-3 text-sm font-bold">
-            ⏳ {minutesLeft} মিনিট বাকি
-          </div>
-        </div>
-      )}
-
-      <div
-        className={`p-5 rounded-[2.5rem] transition-all duration-300 border ${
-          item.name === currentPrayer?.name
-            ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-2xl'
-            : 'bg-white dark:bg-slate-900 border-emerald-50 dark:border-emerald-900/20'
-        }`}
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <h4 className="text-lg font-black">{item.name}</h4>
-            <p className="text-xs font-bold opacity-70">{item.type}</p>
-          </div>
-
-          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur font-black text-lg">
-            {item.time}
-          </div>
-        </div>
-
-        {item.name === currentPrayer?.name && (
-          <div className="mt-3 text-xs font-bold animate-pulse">
-            🟢 এখনকার নামাজ
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+   
 
     if (category === 'holidays') return (
       <div key={item.id || index} className="bg-white dark:bg-slate-900 p-5 rounded-[2.2rem] mb-3 flex items-center justify-between border border-orange-50 dark:border-orange-900/20 shadow-sm relative overflow-hidden group">
@@ -584,22 +529,73 @@ useEffect(() => {
         </div>
       ) : (
         <div className="animate-slide-up space-y-1">
-          {isAiLoading && (
-            <div className="bg-indigo-50 dark:bg-indigo-950/40 p-5 rounded-[2rem] border border-indigo-100/50 dark:border-indigo-900/50 mb-6 flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2">
-                  <Sparkles className="w-3 h-3 animate-bounce" /> Smart Scan in Progress
-                </span>
-                <Loader2 className="w-3 h-3 animate-spin text-indigo-600" />
-              </div>
-              <div className="w-full h-1 bg-indigo-200 dark:bg-indigo-900 rounded-full overflow-hidden">
-                <div className="w-full h-full bg-indigo-600 animate-[shimmer_1.5s_infinite]"></div>
+  {data.length > 0 ? (
+    category === 'prayers' ? (
+      (() => {
+        const { currentPrayer, nextPrayer, currentTime } = getPrayerTimes(data);
+
+        const parseTime = (timeStr: string) => {
+          const [time, modifier] = timeStr.split(' ');
+          let [h, m] = time.split(':').map(Number);
+          if (modifier === 'PM' && h !== 12) h += 12;
+          if (modifier === 'AM' && h === 12) h = 0;
+          return h * 60 + m;
+        };
+
+        const nextTime = parseTime(nextPrayer?.time || '00:00 AM');
+        const diff = nextTime - currentTime;
+        const minutesLeft = diff > 0 ? diff : diff + 1440;
+
+        return (
+          <div className="space-y-4">
+
+            {/* TOP CARD */}
+            <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-2xl">
+              <p className="text-xs opacity-80 font-bold">পরবর্তী নামাজ</p>
+              <h3 className="text-xl font-black">{nextPrayer?.name}</h3>
+              <p className="text-3xl font-black mt-1">{nextPrayer?.time}</p>
+              <div className="mt-3 text-sm font-bold">
+                ⏳ {minutesLeft} মিনিট বাকি
               </div>
             </div>
-          )}
-          {data.length > 0 ? data.map((item, i) => renderItem(item, i)) : <div className="text-center py-20 text-slate-400 font-bold">কোনো তথ্য পাওয়া যায়নি</div>}
-        </div>
-      )}
+
+            {/* LIST */}
+            {data.map((item: any, i: number) => (
+              <div
+                key={i}
+                className={`p-5 rounded-[2.5rem] ${
+                  item.name === currentPrayer?.name
+                    ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-2xl'
+                    : 'bg-white dark:bg-slate-900'
+                }`}
+              >
+                <div className="flex justify-between">
+                  <div>
+                    <h4 className="font-black">{item.name}</h4>
+                    <p className="text-xs">{item.type}</p>
+                  </div>
+                  <div className="font-black">{item.time}</div>
+                </div>
+
+                {item.name === currentPrayer?.name && (
+                  <div className="text-xs mt-2 animate-pulse">
+                    🟢 এখনকার নামাজ
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      })()
+    ) : (
+      data.map((item, i) => renderItem(item, i))
+    )
+  ) : (
+    <div className="text-center py-20 text-slate-400 font-bold">
+      কোনো তথ্য পাওয়া যায়নি
+    </div>
+  )}
+</div>
 
       {selectedTrain && (
         <div className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-xl flex items-end md:items-center justify-center p-4">
