@@ -5,18 +5,19 @@ import { supabase } from './supabase';
 const getFallbackData = (category: string) => {
   if (category === 'trains') {
     return [
-      { id: '1', name: 'মধুমতি এক্সপ্রেস (৭৫৫)', route: 'রাজবাড়ী - ঢাকা', detailedRoute: 'রাজবাড়ী, পাঁচুরিয়া, আমিরাবাদ, ফরিদপুর, বাখুন্ডা, পুখুরিয়া, তালমা, ভাঙ্গা, ভাঙ্গা জংশন, শিবচর, পদ্মা, মাওয়া, শ্রীনগর, নিমতলা, গেন্ডারিয়া, ঢাকা (কমলাপুর)', departure: '06:00 AM', arrival: '08:40 AM', offDay: 'বৃহস্পতিবার', type: 'intercity' },
-      { id: '2', name: 'মধুমতি এক্সপ্রেস (৭৫৬)', route: 'ঢাকা - রাজবাড়ী', detailedRoute: 'ঢাকা (কমলাপুর), গেন্ডারিয়া, নিমতলা, শ্রীনগর, মাওয়া, পদ্মা, শিবচর, ভাঙ্গা জংশন, ভাঙ্গা, তালমা, পুখুরিয়া, বাখুন্ডা, ফরিদপুর, আমিরাবাদ, পাঁচুরিয়া, রাজবাড়ী', departure: '03:00 PM', arrival: '05:40 PM', offDay: 'বৃহস্পতিবার', type: 'intercity' },
-      { id: '3', name: 'নকশীকাঁথা কমিউটার (২৫)', route: 'রাজবাড়ী - খুলনা', detailedRoute: 'রাজবাড়ী, সূর্যনগর, বেলগাছি, কালুখালী, পাংশা, খোকসা, কুমারখালী, কুষ্টিয়া কোর্ট, কুষ্টিয়া, পোড়াদহ জংশন, হালসা, আলমডাঙ্গা, চুয়াডাঙ্গা, দর্শনা, উথলী, আনসারবাড়িয়া, সাফদারপুর, কোটচাঁদপুর, মোবারকগঞ্জ, বারোবাজার, যশোর, নওয়াপাড়া, ফুলতলা, দৌলতপুর, খুলনা', departure: '08:10 AM', arrival: '02:10 PM', offDay: 'নেই', type: 'commuter' },
-      { id: '4', name: 'নকশীকাঁথা কমিউটার (২৬)', route: 'খুলনা - রাজবাড়ী', detailedRoute: 'খুলনা, দৌলতপুর, ফুলতলা, নওয়াপাড়া, যশোর, বারোবাজার, মোবারকগঞ্জ, কোটচাঁদপুর, সাফদারপুর, আনসারবাড়িয়া, উথলী, দর্শনা, চুয়াডাঙ্গা, আলমডাঙ্গা, হালসা, পোড়াদহ জংশন, কুষ্টিয়া, কুষ্টিয়া কোর্ট, কুমারখালী, খোকসা, পাংশা, কালুখালী, বেলগাছি, সূর্যনগর, রাজবাড়ী', departure: '11:30 PM', arrival: '05:40 AM', offDay: 'নেই', type: 'commuter' },
-      { id: '5', name: 'ভাটিয়াপাড়া এক্সপ্রেস (৭৭)', route: 'রাজবাড়ী - ভাটিয়াপাড়া', detailedRoute: 'রাজবাড়ী, পাঁচুরিয়া, আমিরাবাদ, ফরিদপুর, বাখুন্ডা, পুখুরিয়া, তালমা, ভাঙ্গা, পুখুরিয়া, বোয়ালমারী, সহস্রাইল, ভাটিয়াপাড়া ঘাট', departure: '06:30 AM', arrival: '10:00 AM', offDay: 'নেই', type: 'mail' },
-      { id: '6', name: 'ভাটিয়াপাড়া এক্সপ্রেস (৭৮)', route: 'ভাটিয়াপাড়া - রাজবাড়ী', detailedRoute: 'ভাটিয়াপাড়া ঘাট, সহস্রাইল, বোয়ালমারী, পুখুরিয়া, ভাঙ্গা, তালমা, পুখুরিয়া, বাখুন্ডা, ফরিদপুর, আমিরাবাদ, পাঁচুরিয়া, রাজবাড়ী', departure: '10:30 AM', arrival: '02:00 PM', offDay: 'নেই', type: 'mail' },
-      { id: '7', name: 'রাজবাড়ী এক্সপ্রেস (১০৫)', route: 'রাজবাড়ী - ভাঙ্গা', detailedRoute: 'রাজবাড়ী, পাঁচুরিয়া, আমিরাবাদ, ফরিদপুর, বাখুন্ডা, পুখুরিয়া, তালমা, ভাঙ্গা', departure: '02:45 PM', arrival: '04:15 PM', offDay: 'নেই', type: 'commuter' },
-      { id: '8', name: 'রাজবাড়ী এক্সপ্রেস (১০৬)', route: 'ভাঙ্গা - রাজবাড়ী', detailedRoute: 'ভাঙ্গা, তালমা, পুখুরিয়া, বাখুন্ডা, ফরিদপুর, আমিরাবাদ, পাঁচুরিয়া, রাজবাড়ী', departure: '05:00 PM', arrival: '06:30 PM', offDay: 'নেই', type: 'commuter' },
-      { id: '9', name: 'বেনাপোল এক্সপ্রেস (৭৯৫)', route: 'বেনাপোল - ঢাকা', detailedRoute: 'বেনাপোল, নাভারণ, ঝিকরগাছা, যশোর, মোবারকগঞ্জ, কোটচাঁদপুর, দর্শনা হল্ট, চুয়াডাঙ্গা, পোড়াদহ জংশন, কুষ্টিয়া কোর্ট, রাজবাড়ী, ফরিদপুর, ভাঙ্গা জংশন, ঢাকা (কমলাপুর)', departure: '01:00 PM', arrival: '08:45 PM', offDay: 'বুধবার', type: 'intercity' },
-      { id: '10', name: 'বেনাপোল এক্সপ্রেস (৭৯৬)', route: 'ঢাকা - বেনাপোল', detailedRoute: 'ঢাকা (কমলাপুর), ভাঙ্গা জংশন, ফরিদপুর, রাজবাড়ী, কুষ্টিয়া কোর্ট, পোড়াদহ জংশন, চুয়াডাঙ্গা, দর্শনা হল্ট, কোটচাঁদপুর, মোবারকগঞ্জ, যশোর, ঝিকরগাছা, নাভারণ, বেনাপোল', departure: '11:45 PM', arrival: '07:20 AM', offDay: 'বুধবার', type: 'intercity' },
-      { id: '11', name: 'সুন্দরবন এক্সপ্রেস (৭২৫)', route: 'খুলনা - ঢাকা', detailedRoute: 'খুলনা, দৌলতপুর, নওয়াপাড়া, যশোর, মোবারকগঞ্জ, কোটচাঁদপুর, চুয়াডাঙ্গা, আলমডাঙ্গা, পোড়াদহ জংশন, কুষ্টিয়া কোর্ট, রাজবাড়ী, ফরিদপুর, ভাঙ্গা জংশন, ঢাকা (কমলাপুর)', departure: '09:45 PM', arrival: '05:10 AM', offDay: 'মঙ্গলবার', type: 'intercity' },
-      { id: '12', name: 'সুন্দরবন এক্সপ্রেস (৭২৬)', route: 'ঢাকা - খুলনা', detailedRoute: 'ঢাকা (কমলাপুর), ভাঙ্গা জংশন, ফরিদপুর, রাজবাড়ী, কুষ্টিয়া কোর্ট, পোড়াদহ জংশন, আলমডাঙ্গা, চুয়াডাঙ্গা, কোটচাঁদপুর, মোবারকগঞ্জ, যশোর, নওয়াপাড়া, দৌলতপুর, খুলনা', departure: '08:15 AM', arrival: '03:50 PM', offDay: 'বুধবার', type: 'intercity' }
+      { id: '1', name: 'বেনাপোল এক্সপ্রেস (৭৯৬)', route: 'রাজবাড়ী - বেনাপোল', detailedRoute: 'ঢাকা (কমলাপুর), ভাঙ্গা জংশন, ফরিদপুর, রাজবাড়ী, কুষ্টিয়া কোর্ট, পোড়াদহ জংশন, চুয়াডাঙ্গা, দর্শনা হল্ট, কোটচাঁদপুর, মোবারকগঞ্জ, যশোর, ঝিকরগাছা, নাভারণ, বেনাপোল', arrival: '01:50 AM', departure: '02:00 AM', offDay: 'বুধবার', type: 'intercity' },
+      { id: '2', name: 'সুন্দরবন এক্সপ্রেস (৭২৫)', route: 'রাজবাড়ী - ঢাকা', detailedRoute: 'খুলনা, দৌলতপুর, নওয়াপাড়া, যশোর, মোবারকগঞ্জ, কোটচাঁদপুর, চুয়াডাঙ্গা, আলমডাঙ্গা, পোড়াদহ জংশন, কুষ্টিয়া কোর্ট, রাজবাড়ী, ফরিদপুর, ভাঙ্গা জংশন, ঢাকা (কমলাপুর)', arrival: '02:35 AM', departure: '02:45 AM', offDay: 'মঙ্গলবার', type: 'intercity' },
+      { id: '3', name: 'নকশীকাঁথা কমিউটার (২৫)', route: 'রাজবাড়ী - ঢাকা', detailedRoute: 'খুলনা, দৌলতপুর, ফুলতলা, নওয়াপাড়া, যশোর, বারোবাজার, মোবারকগঞ্জ, কোটচাঁদপুর, সাফদারপুর, আনসারবাড়িয়া, উথলী, দর্শনা, চুয়াডাঙ্গা, আলমডাঙ্গা, হালসা, পোড়াদহ জংশন, কুষ্টিয়া, কুষ্টিয়া কোর্ট, কুমারখালী, খোকসা, পাংশা, কালুখালী, বেলগাছি, সূর্যনগর, রাজবাড়ী, গোয়ালন্দ ঘাট, ঢাকা', arrival: '05:20 AM', departure: '05:30 AM', offDay: 'নেই', type: 'commuter' },
+      { id: '4', name: 'রাজবাড়ী মেইল (১০৫)', route: 'রাজবাড়ী - ভাঙ্গা', detailedRoute: 'রাজবাড়ী, পাঁচুরিয়া, আমিরাবাদ, ফরিদপুর, বাখুন্ডা, পুখুরিয়া, তালমা, ভাঙ্গা', arrival: 'Start', departure: '06:10 AM', offDay: 'নেই', type: 'mail' },
+      { id: '5', name: 'লোকাল শাটল (৫১৩)', route: 'রাজবাড়ী - গোয়ালন্দ ঘাট', detailedRoute: 'রাজবাড়ী, গোয়ালন্দ বাজার, গোয়ালন্দ ঘাট', arrival: 'Start', departure: '06:15 AM', offDay: 'নেই', type: 'commuter' },
+      { id: '6', name: 'লোকাল শাটল (৫০৬)', route: 'রাজবাড়ী - পোড়াদহ', detailedRoute: 'রাজবাড়ী, সূর্যনগর, বেলগাছি, কালুখালী, পাংশা, খোকসা, কুমারখালী, কুষ্টিয়া কোর্ট, কুষ্টিয়া, পোড়াদহ জংশন', arrival: '08:15 AM', departure: '08:15 AM', offDay: 'নেই', type: 'commuter' },
+      { id: '7', name: 'সুন্দরবন এক্সপ্রেস (৭২৬)', route: 'রাজবাড়ী - খুলনা', detailedRoute: 'ঢাকা (কমলাপুর), ভাঙ্গা জংশন, ফরিদপুর, রাজবাড়ী, কুষ্টিয়া কোর্ট, পোড়াদহ জংশন, আলমডাঙ্গা, চুয়াডাঙ্গা, কোটচাঁদপুর, মোবারকগঞ্জ, যশোর, নওয়াপাড়া, দৌলতপুর, খুলনা', arrival: '10:15 AM', departure: '10:25 AM', offDay: 'বুধবার', type: 'intercity' },
+      { id: '8', name: 'মধুমতি এক্সপ্রেস (৭৫৬)', route: 'রাজবাড়ী - ঢাকা', detailedRoute: 'রাজশাহী, আব্দুলপুর, ঈশ্বরদী, পাকশী, ভেড়ামারা, পোড়াদহ জংশন, কুষ্টিয়া কোর্ট, রাজবাড়ী, পাঁচুরিয়া, আমিরাবাদ, ফরিদপুর, বাখুন্ডা, পুখুরিয়া, তালমা, ভাঙ্গা, ভাঙ্গা জংশন, শিবচর, পদ্মা, মাওয়া, শ্রীনগর, নিমতলা, গেন্ডারিয়া, ঢাকা (কমলাপুর)', arrival: '10:50 AM', departure: '11:05 AM', offDay: 'শনিবার', type: 'intercity' },
+      { id: '9', name: 'লোকাল শাটল (৫০৫)', route: 'রাজবাড়ী - গোয়ালন্দ ঘাট', detailedRoute: 'রাজবাড়ী, গোয়ালন্দ বাজার, গোয়ালন্দ ঘাট', arrival: '02:45 PM', departure: '02:45 PM', offDay: 'নেই', type: 'commuter' },
+      { id: '10', name: 'নকশীকাঁথা কমিউটার (২৬)', route: 'রাজবাড়ী - খুলনা', detailedRoute: 'ঢাকা, গোয়ালন্দ ঘাট, রাজবাড়ী, সূর্যনগর, বেলগাছি, কালুখালী, পাংশা, খোকসা, কুমারখালী, কুষ্টিয়া কোর্ট, কুষ্টিয়া, পোড়াদহ জংশন, হালসা, আলমডাঙ্গা, চুয়াডাঙ্গা, দর্শনা, উথলী, আনসারবাড়িয়া, সাফদারপুর, কোটচাঁদপুর, মোবারকগঞ্জ, বারোবাজার, যশোর, নওয়াপাড়া, ফুলতলা, দৌলতপুর, খুলনা', arrival: '03:00 PM', departure: '03:00 PM', offDay: 'নেই', type: 'commuter' },
+      { id: '11', name: 'লোকাল শাটল (৫০৮)', route: 'রাজবাড়ী - পোড়াদহ', detailedRoute: 'রাজবাড়ী, সূর্যনগর, বেলগাছি, কালুখালী, পাংশা, খোকসা, কুমারখালী, কুষ্টিয়া কোর্ট, কুষ্টিয়া, পোড়াদহ জংশন', arrival: '04:35 PM', departure: '04:35 PM', offDay: 'নেই', type: 'commuter' },
+      { id: '12', name: 'বেনাপোল এক্সপ্রেস (৭৯৫)', route: 'রাজবাড়ী - ঢাকা', detailedRoute: 'বেনাপোল, নাভারণ, ঝিকরগাছা, যশোর, মোবারকগঞ্জ, কোটচাঁদপুর, দর্শনা হল্ট, চুয়াডাঙ্গা, পোড়াদহ জংশন, কুষ্টিয়া কোর্ট, রাজবাড়ী, ফরিদপুর, ভাঙ্গা জংশন, ঢাকা (কমলাপুর)', arrival: '05:30 PM', departure: '05:50 PM', offDay: 'বুধবার', type: 'intercity' },
+      { id: '13', name: 'মধুমতি এক্সপ্রেস (৭৫৫)', route: 'রাজবাড়ী - রাজশাহী', detailedRoute: 'ঢাকা (কমলাপুর), গেন্ডারিয়া, নিমতলা, শ্রীনগর, মাওয়া, পদ্মা, শিবচর, ভাঙ্গা জংশন, ভাঙ্গা, তালমা, পুখুরিয়া, বাখুন্ডা, ফরিদপুর, আমিরাবাদ, পাঁচুরিয়া, রাজবাড়ী, কুষ্টিয়া কোর্ট, পোড়াদহ জংশন, ভেড়ামারা, পাকশী, ঈশ্বরদী, আব্দুলপুর, রাজশাহী', arrival: '05:45 PM', departure: '06:00 PM', offDay: 'শনিবার', type: 'intercity' }
     ];
   }
   if (category === 'emergency') {
@@ -62,6 +63,71 @@ const getFallbackData = (category: string) => {
       { id: '8', name: 'ডাঃ কামরুল ইসলাম', specialty: 'ডায়াবেটিস ও হরমোন বিশেষজ্ঞ', address: 'আরোগ্য ক্লিনিক', mobile: '01711000008', timing: 'বিকাল ৫টা - রাত ৮টা' }
     ];
   }
+  if (category === 'holidays') {
+    return [
+      { id: '1', name: 'New Year’s Day', date: '01 January, Thursday', duration: '1 Day' },
+      { id: '2', name: 'Birthday of Martin Luther King Jr', date: '19 January, Monday', duration: '1 Day' },
+      { id: '3', name: '*Shab-e-Barat', date: '04 February, Wednesday', duration: '1 Day' },
+      { id: '4', name: 'Washington’s Birthday', date: '16 February, Monday', duration: '1 Day' },
+      { id: '5', name: 'Shahid Dibosh and International Mother Language Day', date: '21 February, Saturday', duration: '1 Day' },
+      { id: '6', name: '*Shab-e-Qadr', date: '17 March, Tuesday', duration: '1 Day' },
+      { id: '7', name: '*Eid-ul-Fitr', date: '19-23 March, Thursday-Monday', duration: '5 Days' },
+      { id: '8', name: 'Jumatul Bida', date: '20 March, Friday', duration: '1 Day' },
+      { id: '9', name: 'Independence and National Day of Bangladesh', date: '26 March, Thursday', duration: '1 Day' },
+      { id: '10', name: 'Bangla New Year', date: '14 April, Tuesday', duration: '1 Day' },
+      { id: '11', name: '*Buddha Purnima', date: '01 May, Friday', duration: '1 Day' },
+      { id: '12', name: 'Memorial Day', date: '25 May, Monday', duration: '1 Day' },
+      { id: '13', name: '*Eid-ul Adha', date: '26-31 May, Tuesday-Sunday', duration: '6 Days' },
+      { id: '14', name: 'Juneteenth National Independence Day', date: '19 June, Friday', duration: '1 Day' },
+      { id: '15', name: '*Ashura (10th Muharram)', date: '26 June, Friday', duration: '1 Day' },
+      { id: '16', name: 'Independence Day of USA', date: '03 July, Friday', duration: '1 Day' },
+      { id: '17', name: 'July Uprising Day', date: '05 August, Wednesday', duration: '1 Day' },
+      { id: '18', name: '*Eid-e-Milad-un-Nabi', date: '26 August, Wednesday', duration: '1 Day' },
+      { id: '19', name: 'Janmastami', date: '04 September, Friday', duration: '1 Day' },
+      { id: '20', name: 'Labor Day', date: '07 September, Monday', duration: '1 Day' },
+      { id: '21', name: 'Columbus Day', date: '12 October, Monday', duration: '1 Day' },
+      { id: '22', name: 'Durga Puja', date: '20-21 October, Tuesday-Wednesday', duration: '2 Days' },
+      { id: '23', name: 'Veterans Day', date: '11 November, Wednesday', duration: '1 Day' },
+      { id: '24', name: 'Thanksgiving Day', date: '26 November, Thursday', duration: '1 Day' },
+      { id: '25', name: 'Victory Day', date: '16 December, Wednesday', duration: '1 Day' },
+      { id: '26', name: 'Christmas Day', date: '25 December, Friday', duration: '1 Day' }
+    ];
+  }
+  if (category === 'education') {
+    return [
+      { id: '1', name: 'রাজবাড়ী সরকারি কলেজ', address: 'কলেজ রোড, রাজবাড়ী', type: 'সরকারি কলেজ', website: 'http://www.rgc.edu.bd' },
+      { id: '2', name: 'রাজবাড়ী সরকারি আদর্শ মহিলা কলেজ', address: 'সদর, রাজবাড়ী', type: 'সরকারি কলেজ', website: 'http://www.rgawc.edu.bd' },
+      { id: '3', name: 'পাংশা সরকারি কলেজ', address: 'পাংশা, রাজবাড়ী', type: 'সরকারি কলেজ', website: 'http://www.pangshacollege.edu.bd' },
+      { id: '4', name: 'গোয়ালন্দ কামরুল ইসলাম সরকারি কলেজ', address: 'গোয়ালন্দ, রাজবাড়ী', type: 'সরকারি কলেজ', website: '' },
+      { id: '5', name: 'রাজবাড়ী সরকারি উচ্চ বিদ্যালয়', address: 'সদর, রাজবাড়ী', type: 'সরকারি বিদ্যালয়', website: '' },
+      { id: '6', name: 'রাজবাড়ী সরকারি বালিকা উচ্চ বিদ্যালয়', address: 'সদর, রাজবাড়ী', type: 'সরকারি বিদ্যালয়', website: '' },
+      { id: '7', name: 'বালিয়াকান্দি সরকারি কলেজ', address: 'বালিয়াকান্দি, রাজবাড়ী', type: 'সরকারি কলেজ', website: '' },
+      { id: '8', name: 'মীর মশাররফ হোসেন ডিগ্রি কলেজ', address: 'পদমদী, বালিয়াকান্দি', type: 'এমপিওভুক্ত কলেজ', website: '' }
+    ];
+  }
+  if (category === 'prayers') {
+    return [
+      { id: '1', name: 'ফজর', time: '০৪:৪৫ এএম', type: 'ফরজ' },
+      { id: '2', name: 'যোহর', time: '০১:১৫ পিএম', type: 'ফরজ' },
+      { id: '3', name: 'আসর', time: '০৪:৩০ পিএম', type: 'ফরজ' },
+      { id: '4', name: 'মাগরিব', time: '০৬:১৫ পিএম', type: 'ফরজ' },
+      { id: '5', name: 'এশা', time: '০৭:৪৫ পিএম', type: 'ফরজ' },
+      { id: '6', name: 'জুম্মা', time: '০১:৩০ পিএম', type: 'ফরজ (শুক্রবার)' },
+      { id: '7', name: 'তাহাজ্জুদ', time: '০৩:৩০ এএম', type: 'নফল' }
+    ];
+  }
+  if (category === 'doctors') {
+    return [
+      { id: '1', name: 'ডাঃ মোঃ শফিকুল ইসলাম', specialty: 'মেডিসিন বিশেষজ্ঞ', address: 'রাজবাড়ী ক্লিনিক, বড়পুল', mobile: '01711000001', timing: 'বিকাল ৪টা - রাত ৮টা' },
+      { id: '2', name: 'ডাঃ ফাতেমা বেগম', specialty: 'গাইনী ও প্রসূতি রোগ বিশেষজ্ঞ', address: 'আরোগ্য ক্লিনিক, পান্না চত্বর', mobile: '01711000002', timing: 'বিকাল ৩টা - রাত ৭টা' },
+      { id: '3', name: 'ডাঃ আব্দুল্লাহ আল মামুন', specialty: 'শিশু রোগ বিশেষজ্ঞ', address: 'সেন্ট্রাল হাসপাতাল, স্টেশন রোড', mobile: '01711000003', timing: 'সকাল ১০টা - দুপুর ১টা' },
+      { id: '4', name: 'ডাঃ এস. এম. তারেক', specialty: 'হৃদরোগ বিশেষজ্ঞ', address: 'ইসলামী ব্যাংক হাসপাতাল', mobile: '01711000004', timing: 'বিকাল ৫টা - রাত ৯টা' },
+      { id: '5', name: 'ডাঃ রফিকুল হাসান', specialty: 'অর্থোপেডিক সার্জন', address: 'পপুলার ডায়াগনস্টিক সেন্টার', mobile: '01711000005', timing: 'বিকাল ৪টা - রাত ৮টা' },
+      { id: '6', name: 'ডাঃ নাজমুল হুদা', specialty: 'চর্ম ও যৌন রোগ বিশেষজ্ঞ', address: 'রাজবাড়ী সদর হাসপাতাল', mobile: '01711000006', timing: 'সকাল ৯টা - দুপুর ২টা' },
+      { id: '7', name: 'ডাঃ আয়েশা সিদ্দিকা', specialty: 'নাক, কান ও গলা বিশেষজ্ঞ', address: 'রাজবাড়ী ক্লিনিক', mobile: '01711000007', timing: 'বিকাল ৪টা - রাত ৮টা' },
+      { id: '8', name: 'ডাঃ কামরুল ইসলাম', specialty: 'ডায়াবেটিস ও হরমোন বিশেষজ্ঞ', address: 'আরোগ্য ক্লিনিক', mobile: '01711000008', timing: 'বিকাল ৫টা - রাত ৮টা' }
+    ];
+  }
   if (category === 'prayers') {
     return [
       { id: '1', name: 'ফজর', time: '০৪:৪৫ এএম', type: 'ফরজ' },
@@ -75,21 +141,32 @@ const getFallbackData = (category: string) => {
   }
   if (category === 'holidays') {
     return [
-      { id: '1', name: 'শহীদ দিবস ও আন্তর্জাতিক মাতৃভাষা দিবস', date: '২১ ফেব্রুয়ারি ২০২৬', duration: '১ দিন' },
-      { id: '2', name: 'জাতির পিতার জন্মবার্ষিকী', date: '১৭ মার্চ ২০২৬', duration: '১ দিন' },
-      { id: '3', name: 'স্বাধীনতা ও জাতীয় দিবস', date: '২৬ মার্চ ২০২৬', duration: '১ দিন' },
-      { id: '4', name: 'জুমাতুল বিদা ও শব-ই-কদর', date: 'এপ্রিল ২০২৬ (চাঁদ দেখা সাপেক্ষে)', duration: '২ দিন' },
-      { id: '5', name: 'ঈদুল ফিতর', date: 'এপ্রিল ২০২৬ (চাঁদ দেখা সাপেক্ষে)', duration: '৩ দিন' },
-      { id: '6', name: 'পহেলা বৈশাখ', date: '১৪ এপ্রিল ২০২৬', duration: '১ দিন' },
-      { id: '7', name: 'মে দিবস', date: '১ মে ২০২৬', duration: '১ দিন' },
-      { id: '8', name: 'ঈদুল আজহা', date: 'জুন ২০২৬ (চাঁদ দেখা সাপেক্ষে)', duration: '৩ দিন' },
-      { id: '9', name: 'আশুরা', date: 'জুলাই ২০২৬ (চাঁদ দেখা সাপেক্ষে)', duration: '১ দিন' },
-      { id: '10', name: 'জাতীয় শোক দিবস', date: '১৫ আগস্ট ২০২৬', duration: '১ দিন' },
-      { id: '11', name: 'জন্মাষ্টমী', date: 'আগস্ট ২০২৬', duration: '১ দিন' },
-      { id: '12', name: 'ঈদে মিলাদুন্নবী', date: 'সেপ্টেম্বর ২০২৬ (চাঁদ দেখা সাপেক্ষে)', duration: '১ দিন' },
-      { id: '13', name: 'দুর্গাপূজা (বিজয়া দশমী)', date: 'অক্টোবর ২০২৬', duration: '১ দিন' },
-      { id: '14', name: 'বিজয় দিবস', date: '১৬ ডিসেম্বর ২০২৬', duration: '১ দিন' },
-      { id: '15', name: 'যিশু খ্রিস্টের জন্মদিন (বড়দিন)', date: '২৫ ডিসেম্বর ২০২৬', duration: '১ দিন' }
+      { id: '1', name: 'New Year’s Day', date: '01 January, Thursday', duration: '1 Day' },
+      { id: '2', name: 'Birthday of Martin Luther King Jr', date: '19 January, Monday', duration: '1 Day' },
+      { id: '3', name: '*Shab-e-Barat', date: '04 February, Wednesday', duration: '1 Day' },
+      { id: '4', name: 'Washington’s Birthday', date: '16 February, Monday', duration: '1 Day' },
+      { id: '5', name: 'Shahid Dibosh and International Mother Language Day', date: '21 February, Saturday', duration: '1 Day' },
+      { id: '6', name: '*Shab-e-Qadr', date: '17 March, Tuesday', duration: '1 Day' },
+      { id: '7', name: '*Eid-ul-Fitr', date: '19-23 March, Thursday-Monday', duration: '5 Days' },
+      { id: '8', name: 'Jumatul Bida', date: '20 March, Friday', duration: '1 Day' },
+      { id: '9', name: 'Independence and National Day of Bangladesh', date: '26 March, Thursday', duration: '1 Day' },
+      { id: '10', name: 'Bangla New Year', date: '14 April, Tuesday', duration: '1 Day' },
+      { id: '11', name: '*Buddha Purnima', date: '01 May, Friday', duration: '1 Day' },
+      { id: '12', name: 'Memorial Day', date: '25 May, Monday', duration: '1 Day' },
+      { id: '13', name: '*Eid-ul Adha', date: '26-31 May, Tuesday-Sunday', duration: '6 Days' },
+      { id: '14', name: 'Juneteenth National Independence Day', date: '19 June, Friday', duration: '1 Day' },
+      { id: '15', name: '*Ashura (10th Muharram)', date: '26 June, Friday', duration: '1 Day' },
+      { id: '16', name: 'Independence Day of USA', date: '03 July, Friday', duration: '1 Day' },
+      { id: '17', name: 'July Uprising Day', date: '05 August, Wednesday', duration: '1 Day' },
+      { id: '18', name: '*Eid-e-Milad-un-Nabi', date: '26 August, Wednesday', duration: '1 Day' },
+      { id: '19', name: 'Janmastami', date: '04 September, Friday', duration: '1 Day' },
+      { id: '20', name: 'Labor Day', date: '07 September, Monday', duration: '1 Day' },
+      { id: '21', name: 'Columbus Day', date: '12 October, Monday', duration: '1 Day' },
+      { id: '22', name: 'Durga Puja', date: '20-21 October, Tuesday-Wednesday', duration: '2 Days' },
+      { id: '23', name: 'Veterans Day', date: '11 November, Wednesday', duration: '1 Day' },
+      { id: '24', name: 'Thanksgiving Day', date: '26 November, Thursday', duration: '1 Day' },
+      { id: '25', name: 'Victory Day', date: '16 December, Wednesday', duration: '1 Day' },
+      { id: '26', name: 'Christmas Day', date: '25 December, Friday', duration: '1 Day' }
     ];
   }
   if (category === 'education') {
@@ -124,6 +201,7 @@ export const db = {
     systemInstruction?: string;
     useSearch?: boolean;
     category?: string;
+    model?: string;
   }) => {
     try {
       const now = new Date();
@@ -153,7 +231,7 @@ export const db = {
       }
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: params.model || 'gemini-3-flash-preview',
         contents: formattedContents,
         config: {
           systemInstruction: baseInstruction,
@@ -215,3 +293,4 @@ export const db = {
     }
   }
 };
+
